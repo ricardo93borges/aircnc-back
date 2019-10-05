@@ -1,0 +1,15 @@
+{
+    "extends": [
+        "airbnb",
+        "prettier"
+    ],
+    "plugins": [
+        "prettier"
+    ],
+    "rules": {
+        "semi": 0,
+        "newline-after-import": 0,
+        "import/newline-after-import": 0,
+        "camelcase": 0
+    }
+}
