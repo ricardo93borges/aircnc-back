@@ -7,7 +7,7 @@ const Booking = require(`../models/Booking`)
 module.exports = {
 
     async store(req, res) {
-        try {            
+        try {
             const { user_id } = req.headers
             const { spot_id } = req.params
             const { date } = req.body
@@ -15,9 +15,9 @@ module.exports = {
             const user = await User.findById(user_id)
             const spot = await Spot.findById(spot_id)
 
-            if(!user) return res.status(400).json({error: 'User does not exists'})
-            
-            if(!spot) return res.status(400).json({error: 'Spot does not exists'})
+            if (!user) return res.status(400).json({ error: 'User does not exists' })
+
+            if (!spot) return res.status(400).json({ error: 'Spot does not exists' })
 
             const booking = await Booking.create({
                 user: user_id,
@@ -27,10 +27,16 @@ module.exports = {
 
             await booking.populate('spot').populate('user').execPopulate()
 
+            const ownerSocket = req.connectedUsers = [booking.spot.user]
+
+            if (ownerSocket) {
+                req.io.to(ownerSocket).emit('booking_request', booking)
+            }
+
             return res.status(201).json(booking)
 
         } catch (err) {
-            return res.status(500).json({error: err.message})
+            return res.status(500).json({ error: err.message })
         }
     }
 }
